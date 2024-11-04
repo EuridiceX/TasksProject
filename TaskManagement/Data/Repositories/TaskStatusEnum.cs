@@ -1,8 +1,8 @@
-﻿namespace TaskManagement.Repositories
+﻿namespace TaskManagement.Data.Repositories
 {
     public enum TaskStatusEnum
     {
-        NotStarted, 
+        NotStarted,
         InProgress,
         Completed
     }

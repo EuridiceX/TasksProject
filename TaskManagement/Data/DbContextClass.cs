@@ -1,22 +1,20 @@
-﻿namespace TaskManagement.Data
-{
-    using Microsoft.EntityFrameworkCore;
-    using TaskManagement.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManagement.Data.Entities;
 
-    namespace RabitMqProductAPI.Data
+namespace TaskManagement.Data
+{
+    public class DbContextClass : DbContext
     {
-        public class DbContextClass : DbContext
+        protected readonly IConfiguration Configuration;
+        public DbContextClass(IConfiguration configuration)
         {
-            protected readonly IConfiguration Configuration;
-            public DbContextClass(IConfiguration configuration)
-            {
-                Configuration = configuration;
-            }
-            protected override void OnConfiguring(DbContextOptionsBuilder options)
-            {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            }
-            public DbSet<TaskEntity> Tasks { get; set; }
+            Configuration = configuration;
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            options.UseSqlServer(Configuration.GetConnectionString("DBConnection"));
+        }
+        public DbSet<TaskEntity> Tasks { get; set; }
     }
+    
 }

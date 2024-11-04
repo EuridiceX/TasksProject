@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskManagement.Data.Entities;
+using TaskManagement.Data.Repositories;
+using TaskManagement.Services;
 
 namespace TaskManagement.Controllers
 {
@@ -7,29 +10,63 @@ namespace TaskManagement.Controllers
     [Route("[controller]")]
     public class TaskController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-            };
-
+       
         private readonly ILogger<TaskController> _logger;
+        private readonly ITaskRepository _taskRepository;
+        private readonly IServiceBusHandler _serviceBus;
 
-        public TaskController(ILogger<TaskController> logger)
+        public TaskController(ILogger<TaskController> logger, 
+            ITaskRepository taskRepository, IServiceBusHandler serviceBus)
         {
             _logger = logger;
+            _taskRepository = taskRepository;
+            _serviceBus = serviceBus;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+
+        [HttpGet("GetTasks")]
+        public async Task<IEnumerable<TaskEntity>> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            return await _taskRepository.GetTasks();
+        }
+
+        [HttpPost("Create")]
+        public async Task Create([FromBody] TaskEntity taskEntity)
+        {
+             await _taskRepository.Create(taskEntity);
+        }
+
+        [HttpPut("UpdateStatus")]
+        public async  Task Update([FromBody] UpdateModel updateModel)
+        {
+            var updateAction = new ActionModel<UpdateModel>
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+                Action = ActionType.UpdateStatus,
+                Data = updateModel
+            };
+
+            await _serviceBus.SendMessage(updateAction);
+
+
+            await _taskRepository.Update(updateModel.Status, updateModel.Id);
+
         }
     }
-    
+
+    public class ActionModel<T>
+    {
+        public ActionType Action { get; set; }
+        public T Data { get; set; }
+    }
+    public enum ActionType
+    {
+        UpdateStatus
+    }
+
+    public class UpdateModel
+    {
+        public int Id { get; set; }
+        public TaskStatusEnum Status { get; set; }
+    }
+
 }
