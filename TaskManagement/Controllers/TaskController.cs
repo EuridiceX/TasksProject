@@ -1,18 +1,20 @@
-﻿namespace TaskManagement.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace TaskManagement.Controllers
 {
-    public class TaskController
-    { [ApiController]
+
+    [ApiController]
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class TaskController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+            };
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<TaskController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public TaskController(ILogger<TaskController> logger)
         {
             _logger = logger;
         }
@@ -29,5 +31,5 @@
             .ToArray();
         }
     }
-    }
+    
 }
