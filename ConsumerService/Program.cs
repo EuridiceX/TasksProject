@@ -12,7 +12,7 @@ public class Program
     {
         var config = new ConfigurationBuilder()
                .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+               .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
                .Build();
 
         var serviceProvider = new ServiceCollection()

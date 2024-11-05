@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DBConnection": "Server=localhost\\SQLEXPRESS;Database=TaskDB;Trusted_Connection=True;"
+  }
+}
