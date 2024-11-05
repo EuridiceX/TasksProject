@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace TaskManagement.Services
+namespace Common.ServiceBus
 {
     public class RabbitConnectionFactory : IDisposable
     {

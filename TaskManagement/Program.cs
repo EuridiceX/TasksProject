@@ -1,14 +1,12 @@
+using Common.ServiceBus;
 using TaskManagement.Data;
 using TaskManagement.Data.Repositories;
-using TaskManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-builder.Services.AddScoped<IServiceBusHandler, ServiceBusProducer>();
-
-builder.Services.AddHostedService<ServiceBusConsumer>();
+builder.Services.AddSingleton<IServiceBusHandler, ServiceBusHandler>();
 
 builder.Services.AddSingleton<RabbitConnectionFactory>();
 builder.Services.AddDbContext<DbContextClass>();
@@ -18,6 +16,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+
+var serviceBusHandler = app.Services.GetRequiredService<IServiceBusHandler>();
+
+await serviceBusHandler.StartListening("Status");
 
 if (app.Environment.IsDevelopment())
 {

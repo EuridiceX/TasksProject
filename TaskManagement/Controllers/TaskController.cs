@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common.ServiceBus;
+using CommonLibrary.Models;
+using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Data.Entities;
 using TaskManagement.Data.Repositories;
-using TaskManagement.Services;
 
 namespace TaskManagement.Controllers
 {
@@ -14,6 +15,7 @@ namespace TaskManagement.Controllers
         private readonly ILogger<TaskController> _logger;
         private readonly ITaskRepository _taskRepository;
         private readonly IServiceBusHandler _serviceBus;
+        private const string QueueName = "hello";
 
         public TaskController(ILogger<TaskController> logger, 
             ITaskRepository taskRepository, IServiceBusHandler serviceBus)
@@ -31,42 +33,29 @@ namespace TaskManagement.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task Create([FromBody] TaskEntity taskEntity)
+        public async Task Create([FromBody] TaskModel taskmodel)
         {
-             await _taskRepository.Create(taskEntity);
+            var createAction = new ActionModel<TaskModel>
+            {
+                Action = ActionType.CreateEntity,
+                Data = taskmodel
+            };
+
+            await _serviceBus.SendMessage(createAction, QueueName);
         }
 
         [HttpPut("UpdateStatus")]
         public async  Task Update([FromBody] UpdateModel updateModel)
         {
-            var updateAction = new ActionModel<UpdateModel>
+            var updateAction = new ActionModel<TaskModel>
             {
                 Action = ActionType.UpdateStatus,
-                Data = updateModel
+                Data = new TaskModel { Status = updateModel.Status, Id = updateModel.Id }
             };
 
-            await _serviceBus.SendMessage(updateAction);
-
-
-            await _taskRepository.Update(updateModel.Status, updateModel.Id);
+            await _serviceBus.SendMessage(updateAction, QueueName);
 
         }
-    }
-
-    public class ActionModel<T>
-    {
-        public ActionType Action { get; set; }
-        public T Data { get; set; }
-    }
-    public enum ActionType
-    {
-        UpdateStatus
-    }
-
-    public class UpdateModel
-    {
-        public int Id { get; set; }
-        public TaskStatusEnum Status { get; set; }
     }
 
 }
