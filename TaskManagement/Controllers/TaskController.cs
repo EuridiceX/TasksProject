@@ -11,11 +11,9 @@ namespace TaskManagement.Controllers
     [Route("[controller]")]
     public class TaskController : ControllerBase
     {
-       
         private readonly ILogger<TaskController> _logger;
         private readonly ITaskRepository _taskRepository;
         private readonly IServiceBusHandler _serviceBus;
-        private const string QueueName = "hello";
 
         public TaskController(ILogger<TaskController> logger, 
             ITaskRepository taskRepository, IServiceBusHandler serviceBus)
@@ -37,23 +35,23 @@ namespace TaskManagement.Controllers
         {
             var createAction = new ActionModel<TaskModel>
             {
-                Action = ActionType.CreateEntity,
+                ActionType = ActionType.CreateEntity,
                 Data = taskmodel
             };
 
-            await _serviceBus.SendMessage(createAction, QueueName);
+            await _serviceBus.SendMessage(createAction, QueueName.CommandQueue);
         }
 
         [HttpPut("UpdateStatus")]
-        public async  Task Update([FromBody] UpdateModel updateModel)
+        public async Task Update([FromBody] UpdateModel updateModel)
         {
             var updateAction = new ActionModel<TaskModel>
             {
-                Action = ActionType.UpdateStatus,
+                ActionType = ActionType.UpdateStatus,
                 Data = new TaskModel { Status = updateModel.Status, Id = updateModel.Id }
             };
 
-            await _serviceBus.SendMessage(updateAction, QueueName);
+            await _serviceBus.SendMessage(updateAction, QueueName.CommandQueue);
 
         }
     }

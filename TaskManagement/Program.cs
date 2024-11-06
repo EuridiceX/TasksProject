@@ -1,4 +1,5 @@
 using Common.ServiceBus;
+using CommonLibrary.Models;
 using TaskManagement.Data;
 using TaskManagement.Data.Repositories;
 
@@ -20,7 +21,7 @@ var app = builder.Build();
 
 var serviceBusHandler = app.Services.GetRequiredService<IServiceBusHandler>();
 
-await serviceBusHandler.StartListening("Status");
+await serviceBusHandler.StartListening(QueueName.StatusQueue);
 
 if (app.Environment.IsDevelopment())
 {

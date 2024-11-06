@@ -2,7 +2,7 @@
 {
     public class ActionModel<T>
     {
-        public ActionType Action { get; set; }
+        public ActionType ActionType { get; set; }
         public T Data { get; set; }
     }
     public enum ActionType

@@ -1,4 +1,5 @@
 ﻿using Common.ServiceBus;
+using CommonLibrary.Models;
 using ConsumerService;
 using ConsumerService.Data;
 using ConsumerService.Data.Repositories;
@@ -17,23 +18,23 @@ public class Program
 
         var serviceProvider = new ServiceCollection()
             .AddSingleton<RabbitConnectionFactory>()
-            .AddSingleton<ServiceBusHandler, MessageProcessor>()
-            .AddSingleton<MessageProcessor>()
+            .AddSingleton<ServiceBusHandler, CommandHandlerService>()
+            .AddSingleton<CommandHandlerService>()
             .AddDbContext<DbContextClass>(options =>
                     options.UseSqlServer(config.GetConnectionString("DBConnection")))
             .AddTransient<ITaskRepository, TaskRepository>()
             .BuildServiceProvider();
 
 
-            var serviceBusHandler = serviceProvider.GetRequiredService<ServiceBusHandler>();
+            var actionHandler = serviceProvider.GetRequiredService<CommandHandlerService>();
 
-            await serviceBusHandler.StartListening("hello");
+            await actionHandler.StartListening(QueueName.CommandQueue);
 
             Console.WriteLine("Press [Enter] to stop and exit.");
 
             Console.ReadLine();
 
-            serviceBusHandler.CleanUp();
+            actionHandler.CleanUp();
 
     }
 }

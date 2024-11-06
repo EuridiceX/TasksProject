@@ -5,9 +5,9 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagement", "TaskManagement\TaskManagement.csproj", "{B105B60F-AA4F-48B9-8A3B-643CD300A262}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsumerService", "ConsumerService\ConsumerService.csproj", "{CA0DFBEF-41F1-4E18-975F-C9161B12330B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandService", "ConsumerService\CommandService.csproj", "{CA0DFBEF-41F1-4E18-975F-C9161B12330B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonLibrary", "Common\CommonLibrary.csproj", "{DF5D7820-7EF0-447F-91E4-1AB0F536E9EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonLibrary", "Common\CommonLibrary.csproj", "{DF5D7820-7EF0-447F-91E4-1AB0F536E9EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

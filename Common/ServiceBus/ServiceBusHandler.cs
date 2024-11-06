@@ -7,17 +7,19 @@ namespace Common.ServiceBus
 {
     public class ServiceBusHandler : IServiceBusHandler, IDisposable
     {
-        private readonly IConnection _connection;
+        private readonly RabbitConnectionFactory _factory;
         private IModel _channel;
 
         public ServiceBusHandler(RabbitConnectionFactory factory)
         {
-            _connection = factory.GetConnection();
+            _factory = factory;
         }
 
-        public Task StartListening(string queueName)
-        { 
-            _channel = _connection.CreateModel();
+        public async Task StartListening(string queueName)
+        {
+            var connection = await _factory.GetConnection();
+
+            _channel = connection.CreateModel();
 
             _channel.QueueDeclare(queue: queueName,
                                  durable: false,
@@ -35,17 +37,20 @@ namespace Common.ServiceBus
 
             _channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
 
+        }
+
+        public virtual Task HandleMessage(string message)
+        {
+            Console.WriteLine($" [x] Received {message}");
+
             return Task.CompletedTask;
         }
 
-        public virtual void HandleMessage(string message)
+        public async Task SendMessage<T>(T model, string queueName)
         {
-            Console.WriteLine($" [x] Received {message}");
-        }
+            var connection = await _factory.GetConnection();
 
-        public Task SendMessage<T>(T model, string queueName)
-        {
-            using var channel = _connection.CreateModel();
+            using var channel = connection.CreateModel();
 
             channel.QueueDeclare(queue: queueName,
                                  durable: false,
@@ -62,19 +67,11 @@ namespace Common.ServiceBus
                                  basicProperties: null,
                                  body: body);
 
-            return Task.CompletedTask;
         }
 
         public void Dispose()
         {
             _channel.Close();
-        }
-
-        public void CleanUp()
-        {
-            Dispose();
-            _connection.Close();
-            _connection.Dispose();
         }
     }
 }
