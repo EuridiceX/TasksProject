@@ -19,14 +19,13 @@ public class Program
         var serviceProvider = new ServiceCollection()
             .AddSingleton<RabbitConnectionFactory>()
             .AddSingleton<ServiceBusHandler, CommandHandlerService>()
-            .AddSingleton<CommandHandlerService>()
             .AddDbContext<DbContextClass>(options =>
                     options.UseSqlServer(config.GetConnectionString("DBConnection")))
             .AddTransient<ITaskRepository, TaskRepository>()
             .BuildServiceProvider();
 
 
-            var actionHandler = serviceProvider.GetRequiredService<CommandHandlerService>();
+            var actionHandler = serviceProvider.GetRequiredService<ServiceBusHandler>();
 
             await actionHandler.StartListening(QueueName.CommandQueue);
 
@@ -34,7 +33,7 @@ public class Program
 
             Console.ReadLine();
 
-            actionHandler.CleanUp();
+           // actionHandler.CleanUp();
 
     }
 }

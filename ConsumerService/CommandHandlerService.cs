@@ -60,10 +60,5 @@ namespace ConsumerService
             await _taskRepository.Create(createEntity);
             await SendMessage(WriteStatus.CreateSuccessful.ToString(), QueueName.StatusQueue);
         }
-
-        public void CleanUp()
-        {
-            Dispose();
-        }
     }
 }
